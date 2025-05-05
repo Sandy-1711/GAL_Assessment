@@ -1,11 +1,6 @@
 from pinecone import Pinecone, ServerlessSpec
-# from utils.config import PINECONE_API_KEY
-import os
-from dotenv import load_dotenv
-load_dotenv()
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
-print(PINECONE_API_KEY)
-def initialize_index(index_name="e-commerce-products", dimension=1536):
+from config import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME
+def initialize_index(index_name=PINECONE_INDEX_NAME, dimension=1536):
     pc = Pinecone(api_key=PINECONE_API_KEY)
     if index_name not in pc.list_indexes().names():
         pc.create_index(

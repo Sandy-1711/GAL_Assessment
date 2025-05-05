@@ -1,12 +1,9 @@
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
-import os
-from dotenv import load_dotenv
-load_dotenv()
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+from config import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME
 
-def embed_and_store_in_pinecone(text_chunks: list[str], index_name: str = "e-commerce-products"):
+
+def embed_and_store_in_pinecone(text_chunks: list[str], index_name: str = PINECONE_INDEX_NAME):
     embeddings = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=OPENAI_API_KEY)
     vectorstore = PineconeVectorStore(
         index_name=index_name,
