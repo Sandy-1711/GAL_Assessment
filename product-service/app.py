@@ -4,7 +4,7 @@ import uvicorn
 import logging
 import logging.config
 import config
-# import router from product_router
+from routers import product_router
 
 logging.config.dictConfig(config.LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
@@ -22,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+@app.include_router(product_router.router, prefix="/api")
 
 @app.get("/")
 async def root():
