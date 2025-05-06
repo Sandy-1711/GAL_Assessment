@@ -9,11 +9,13 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     logging.warning("OPENAI_API_KEY not set. LLM functionality will be limited.")
-
+RAG_TOP_K = os.getenv("RAG_TOP_K")
 # Service URLs
-PRODUCT_SEARCH_URL = os.getenv("PRODUCT_SERVICE_URL", "http://product-search-service:8001")
-ORDER_LOOKUP_URL = os.getenv("ORDER_SERVICE_URL", "http://order-lookup-service:8002")
-
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+PRODUCT_SEARCH_URL = os.getenv("PRODUCT_SERVICE_URL", "http://product-service:8001/api/products")
+ORDER_LOOKUP_URL = os.getenv("ORDER_SERVICE_URL", "http://order-service:8002/api/orders")
 # LLM Configuration
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o")
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.1"))
