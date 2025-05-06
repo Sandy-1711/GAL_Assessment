@@ -25,9 +25,11 @@ WORKDIR /app
 COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
-RUN npm install --omit=dev
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+
+# Install only production dependencies
+RUN npm install --omit=dev
 
 # Expose the port the app runs on
 EXPOSE 3000
