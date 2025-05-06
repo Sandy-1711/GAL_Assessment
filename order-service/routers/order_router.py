@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 
 router = APIRouter(
-    prefix="/order",
+    prefix="/orders",
     tags=["order"],
     responses={404:{"description":"Not found"}}
 )
