@@ -1,32 +1,36 @@
-# Step 1: Build the React application
-FROM node:19.8.1 AS build
+# Use an official Node.js runtime as a parent image
+FROM node:20-alpine AS builder
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY frontend/package.json frontend/package-lock.json ./
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
 
-# Install dependencies
+# Install app dependencies
 RUN npm install
 
-# Copy the rest of the application files
-COPY frontend/ ./
+# Copy the rest of the application code
+COPY . .
 
-# Build the React app
+# Build the Next.js application for production
 RUN npm run build
 
-# Step 2: Serve the React app using a lightweight web server
-FROM nginx:alpine
+# Production image, copy built assets and start server
+FROM node:20-alpine
 
-# Copy the Next.js build output (from the .next folder) to Nginx's serving directory
-COPY --from=build /app/.next /usr/share/nginx/html/.next
+WORKDIR /app
 
-# Copy static assets (optional, if you have static files)
-COPY --from=build /app/public /usr/share/nginx/html/public
+# Copy only necessary files from the builder stage
+COPY --from=builder /app/next.config.mjs ./
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+RUN npm install --omit=dev
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Expose port 80 to access the app
-EXPOSE 80
+# Expose the port the app runs on
+EXPOSE 3000
 
-# Run Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Start the server
+CMD ["npm", "start"]
