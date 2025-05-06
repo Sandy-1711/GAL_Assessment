@@ -40,8 +40,10 @@ async def handle_order_query(
             )
         
         # 1. Process the order query using order service
-        order_service.process_order_query(customer_id, user_query)
-      
+        response = order_service.process_order_query(customer_id, user_query)
+        return OrderQueryResponse(
+            response=response
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
     
