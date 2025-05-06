@@ -9,6 +9,7 @@ PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 PINECONE_INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME")
 # API Keys
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+MOCK_API_URL = os.getenv("MOCK_API_URL","http://mock-api:8003")
 RAG_TOP_K = os.getenv("RAG_TOP_K")
 if not OPENAI_API_KEY:
     logging.warning("OPENAI_API_KEY not set. LLM functionality will be limited.")
