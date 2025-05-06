@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  chat-service:
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./order-service/datasets:/app/datasets
+    ports:
+      - "8002:8002"
+
+  mock-api:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    command: ["uvicorn", "services.mock_api:app", "--host", "0.0.0.0", "--port", "4000"]
+    ports:
+      - "4000:4000"

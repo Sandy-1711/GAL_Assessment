@@ -178,7 +178,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             response = await self.order_service_client.post(
                 "/query",
                 {
-                    "query": message,
+                    "message": message,
                     "customer_id": customer_id,
                     "metadata": metadata
                 }

@@ -3,7 +3,7 @@ import pandas as pd
 
 # Load dataset
 # data\Order_Data_Dataset.csv
-DATASET_PATH = "../../datasets/Order_Data_Dataset.csv"
+DATASET_PATH = "/app/datasets/Order_Data_Dataset.csv"
 try:
     df = pd.read_csv(DATASET_PATH)
 except Exception as e:
