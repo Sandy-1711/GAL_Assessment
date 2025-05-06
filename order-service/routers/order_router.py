@@ -25,6 +25,9 @@ async def handle_order_query(
 ):
     """Processes order-related queries and fetch data from the mock API"""
     try:
+        # 1. Analyse the order query
+        # 2. Call the mock api to get the query results
+        # 3. Format and return the response
         pass
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
