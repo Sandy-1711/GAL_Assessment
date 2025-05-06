@@ -23,7 +23,7 @@ class MockAPI:
                 else:
                     # For endpoints without path parameters
                     url = f"{MOCK_API_URL}{endpoint}"
-
+                print(url)
                 # Make the API call
                 response = await client.get(url)
             

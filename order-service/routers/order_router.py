@@ -12,16 +12,21 @@ router = APIRouter(
 )
 
 class OrderQueryRequest(BaseModel):
-    query: str
-    customer_id: str
+    message: str  # Changed from 'message' to 'query'
+    conversation_id: Optional[str] = None
+    customer_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
 class OrderQueryResponse(BaseModel):
     response: str
+    requires_customer_id: bool = False
+    conversation_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
+    source_type: Optional[str] = "general" 
 
 def get_order_service():
     return OrderService()
+
 
 @router.post("/query", response_model=OrderQueryResponse)
 async def handle_order_query(
@@ -31,19 +36,20 @@ async def handle_order_query(
     """Processes order-related queries and fetch data from the mock API"""
     try:
         customer_id = request.customer_id
-        user_query = request.query
-        print(f"Received query: {user_query}")
-        
         if not customer_id:
             return OrderQueryResponse(
                 response="I'd be happy to help with your order information. Could you please provide your Customer ID?"
             )
         
+        user_query = request.message
+        print(f"Received query: {user_query}")
+        
         # 1. Process the order query using order service
-        result = order_service.process_order_query(customer_id, user_query)
+        result = await order_service.process_order_query(customer_id, user_query)
         return OrderQueryResponse(**result)
     
     except Exception as e:
+        print("Error proccessing query")
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
     
 

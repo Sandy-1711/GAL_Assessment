@@ -3,8 +3,11 @@ import pandas as pd
 
 # Load dataset
 # data\Order_Data_Dataset.csv
-DATASET_PATH = "data\Order_Data_Dataset.csv"
-df = pd.read_csv(DATASET_PATH)
+DATASET_PATH = "../../datasets/Order_Data_Dataset.csv"
+try:
+    df = pd.read_csv(DATASET_PATH)
+except Exception as e:
+    print(f"Error reading dataset: {str(e)}")
 df.dropna(subset=["Product", "Product_Category", "Sales", "Profit"], inplace=True)
 
 # Ensure Sales and Profit are numeric
@@ -31,6 +34,10 @@ app = FastAPI(title="E-commerce Dataset API", description="API for querying e-co
 df.fillna(value="", inplace=True)
 
 # Endpoint to get all data
+@app.get("/")
+def get_status():
+    """Checks the status"""
+    return {"status":"ok"}
 @app.get("/data")
 def get_all_data():
     """Retrieve all records in the dataset."""

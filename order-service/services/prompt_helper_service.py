@@ -62,6 +62,6 @@ class PromptHelperService:
             return self.order_query_analysis_prompt
         
 
-    def get_respose_formatting_prompt(self):
+    def get_response_formatting_prompt(self):
             return self.response_formatting_prompt
         

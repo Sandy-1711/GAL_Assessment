@@ -13,7 +13,7 @@ if not OPENAI_API_KEY:
 # Service URLs
 PRODUCT_SEARCH_URL = os.getenv("PRODUCT_SERVICE_URL", "http://product-service:8001/api/products")
 ORDER_LOOKUP_URL = os.getenv("ORDER_SERVICE_URL", "http://order-service:8002/api/orders")
-MOCK_API_URL = os.getenv("MOCK_API_URL","http://mock-api:8003")
+MOCK_API_URL = os.getenv("MOCK_API_URL","http://127.0.0.1:4001")
 
 # LLM Configuration
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o")

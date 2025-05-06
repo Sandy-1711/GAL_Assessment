@@ -8,7 +8,7 @@ class PostProcessingService:
     def __init__(self) -> None:
         pass
 
-    def apply_post_processing(api_data, post_processing: Dict[str, Any], query_type: str):
+    def apply_post_processing(self, api_data, post_processing: Dict[str, Any], query_type: str):
         """
         Apply post-processing filters to the API response data
         """
