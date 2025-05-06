@@ -1,31 +1,60 @@
-from fastapi import APIRouter, HTTPException, Depends
+"""
+Router for product-related endpoints
+"""
+import logging
+from fastapi import APIRouter, Depends
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
-import logging
 
+from services.product_service import ProductService
+
+# Configure logging
 logger = logging.getLogger(__name__)
 
-router = APIRouter(tags=["product"])
+router = APIRouter(
+    prefix="/api/products",
+    tags=["products"]
+)
 
-class ProductResponse(BaseModel):
-    pass
-class ProductRequest(BaseModel):
-    pass
+class ProductQueryRequest(BaseModel):
+    query: str
+    metadata: Optional[Dict[str, Any]] = None
+    customer_id: Optional[str] = None
 
-@router.post("/query", response_model = ProductResponse)
-async def handle_query(product_request: ProductRequest):
-    """Main endpoint to process the product related queries"""
+class ProductQueryResponse(BaseModel):
+    response: str
+    metadata: Optional[Dict[str, Any]] = None
+
+def get_product_service():
+    """Dependency injection for product service"""
+    return ProductService()
+
+@router.post("/query", response_model=ProductQueryResponse)
+async def handle_product_query(
+    request: ProductQueryRequest,
+    product_service: ProductService = Depends(get_product_service)
+):
+    """
+    Process product-related queries using RAG and LLM
+    """
     try:
-        logger.info(f"Received product request: {product_request.message[:50]}...")
-        return ProductResponse(
-
+        logger.info(f"Received query: {request.query}")
+        
+        response = await run_in_threadpool(
+            product_service.handle_query,
+            request.query,
+            request.customer_id,
+            request.metadata
+        )
+        
+        return ProductQueryResponse(
+            response=response["answer"],
+            metadata={"query": request.query}
         )
     except Exception as e:
-        logger.error(f"Error processing product request: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Product processing error: {str(e)}")
-    
-
-@router.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}
+        logger.error(f"Error handling product query: {str(e)}", exc_info=True)
+        return ProductQueryResponse(
+            response="I'm sorry, I encountered an issue while retrieving product information. Please try again later.",
+            metadata={"error": str(e)}
+        )

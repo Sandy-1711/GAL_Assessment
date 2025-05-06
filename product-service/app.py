@@ -1,45 +1,34 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
+"""
+Main FastAPI application entry point
+"""
 import logging
-import logging.config
-import config
-from routers import product_router
+from fastapi import FastAPI
+from routers.product_router import router as product_router
 
-logging.config.dictConfig(config.LOGGING_CONFIG)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+logger.info("Starting Product Service...")
+
 app = FastAPI(
-    title="E-Commerce Product service",
-    description="Product service that uses the pinecone db along with llm to respond to user queries redirected from chat service",
-    version="1.0.0"
+    title="E-commerce Product Service", 
+    description="Product service that handles product-related queries"
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
-
-@app.include_router(product_router.router, prefix="/api")
+# Include routers
+app.include_router(product_router)
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
-    return {
-        "service":"E-Commerce Product Service",
-        "version":"1.0.0",
-        "status":"operational"
-    }
-
+    """Root endpoint to check if the service is running."""
+    return {"message": "Product Service is running."}
 
 @app.get("/health")
 async def health_check():
-    """Health cheack endpoint"""
-    return {"status":"healthy"}
+    """Simple health check endpoint"""
+    return {"status": "ok"}
 
-if __name__ == "__main":
-    logger.info("Starting E-commerce product service")
-    uvicorn.run(app,host="0.0.0.0", port=8001)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)
