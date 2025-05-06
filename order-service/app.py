@@ -9,6 +9,8 @@ import config
 logging.config.dictConfig(config=config.LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
+logger.info("Starting order service")
+
 app = FastAPI(
     title="E-Commerce Order Service",
     description="Order service that uses mockapi to provide order related user responses",
@@ -38,5 +40,4 @@ async def health_check():
     return {"status":"healthy"}
 
 if __name__ == "__main__":
-    logger.info("Starting E-Commerce Order Service")
     uvicorn.run(app,host="0.0.0.0", port="8002")
