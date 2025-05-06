@@ -8,6 +8,8 @@ from fastapi import HTTPException
 from .llm_service import LLMService
 from .prompt_helper_service import PromptHelperService
 from .mockapi_service import MockAPI
+from .post_processing_service import PostProcessingService
+from .response_formatter_service import ResponseFormatterService
 
 class OrderService:
     def __init__(self) -> None:
@@ -15,8 +17,10 @@ class OrderService:
         self.order_query_analysis_prompt = PromptHelperService().get_order_query_analysis_prompt()
         self.response_formatting_prompt = PromptHelperService().get_respose_formatting_prompt()
         self.mockapi_service = MockAPI()
+        self.post_processing_service = PostProcessingService()
+        self.response_formatter_service = ResponseFormatterService()
 
-    def process_order_query(self, customer_id, user_query):
+    async def process_order_query(self, customer_id, user_query):
         try:
 
             analysis_chain = self.order_query_analysis_prompt | self.llm
@@ -34,8 +38,23 @@ class OrderService:
             
             endpoint = analysis_data.get("endpoint", "")
             parameters = analysis_data.get("parameters", {})
-            mock_api_response = self.mockapi_service.call_mock_api(endpoint, parameters)
+            api_data = self.mockapi_service.call_mock_api(endpoint, parameters)
+            if not api_data or (isinstance(api_data, list) and len(api_data) == 0):
+                return f"I couldn't find any order information for customer ID {customer_id} matching your query. Please check your customer ID or try a different query."
             
+            processed_data = self.post_processing_service.apply_post_processing(api_data, analysis_data.get("post_processing", {}), analysis_data.get("query_type", ""))
+            print(processed_data)
+            # Format the response using the LLM
+            formatted_response = await self.response_formatter_service.format_response(user_query, customer_id, processed_data, self.response_formatting_prompt, self.llm)
+        
+            return {
+                "response": formatted_response,
+                "metadata": {
+                    "raw_data": processed_data if isinstance(processed_data, dict) else [item for item in processed_data][:5]
+                }
+            }
+
+
 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Error handling order query: {str(e)}")
