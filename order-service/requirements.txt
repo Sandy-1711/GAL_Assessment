@@ -6,3 +6,5 @@ python-dotenv
 langchain
 langchain-openai
 openai
+pandas
+numpy
