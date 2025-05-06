@@ -11,10 +11,10 @@ from .mockapi_service import MockAPI
 
 class OrderService:
     def __init__(self) -> None:
-        self.llm = LLMService().get_llm()
-        self.order_query_analysis_prompt = PromptHelperService().get_order_query_analysis_prompt
+        self.llm = LLMService()
+        self.order_query_analysis_prompt = PromptHelperService().get_order_query_analysis_prompt()
         self.response_formatting_prompt = PromptHelperService().get_respose_formatting_prompt()
-        self.mockapi_service = MockAPI.get_mockapi_service()
+        self.mockapi_service = MockAPI()
 
     def process_order_query(self, customer_id, user_query):
         try:
@@ -31,8 +31,11 @@ class OrderService:
                 print(f"Query analysis: {analysis_data}")
             except json.JSONDecodeError:
                 return f"Failed to parse query analysis output: {analysis_result.content}"
-
-                  
+            
+            endpoint = analysis_data.get("endpoint", "")
+            parameters = analysis_data.get("parameters", {})
+            mock_api_response = self.mockapi_service.call_mock_api(endpoint, parameters)
+            
 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Error handling order query: {str(e)}")
