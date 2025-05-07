@@ -13,7 +13,7 @@ export default function ChatMessagesBox({ messages = [] }) {
     }, [messages])
 
     return (
-        <div className="p-4 max-w-3xl w-full mx-auto h-[85vh] mb-20 overflow-y-scroll pb-10 self-end space-y-2">
+        <div className="p-4 max-w-3xl w-full mx-auto h-[85vh] mb-20 overflow-y-scroll pb-10 space-y-2">
             {messages.map((msg, index) => (
                 <div
                     key={index}

@@ -44,6 +44,7 @@ export default function InputBox({ lengthOfMessages }) {
     }} onSubmit={handleFormSubmit} className={` bg-foreground overflow-hidden px-3  py-3 w-1/3 min-w-[400px] flex justify-between items-center rounded-3xl`}>
         {lengthOfMessages > 0 &&
             <button
+                type="button"
                 onClick={() => {
                     if (confirm("Are you sure you want to clear the conversation?")) {
                         dispatch(clear());
