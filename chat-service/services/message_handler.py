@@ -98,10 +98,14 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             elif msg.role == "assistant":
                 history.append(AIMessage(content=msg.message))
 
-        last_user_msg = next((m.message for m in reversed(messages) if m.role == "user"), "")
-        message_with_id = f"{last_user_msg} (Customer ID: {customer_id})" if customer_id else last_user_msg
-        intent_data = await self._classify_intent(message_with_id)
-        
+        # Step 2: Collect all user messages into one string
+        all_user_messages = " ".join([msg.message for msg in messages if msg.role == "user"])
+
+        # Step 3: Append customer ID if known
+        message_with_id = f"{all_user_messages} (Customer ID: {customer_id})" if customer_id else all_user_messages
+
+        # Step 4: Pass the combined message to intent classifier
+        intent_data = await self._classify_intent(message_with_id)  
         # Extract customer_id from the message if present and not already provided
         if intent_data.get("has_customer_id", False) and not customer_id:
             customer_id = intent_data.get("customer_id")
@@ -197,7 +201,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             response = await self.order_service_client.post(
                 "/query",
                 {
-                    "message": serialize_messages(messages),
+                    "messages": serialize_messages(messages),
                     "customer_id": customer_id,
                     "metadata": serialize_metadata(metadata)
                 }

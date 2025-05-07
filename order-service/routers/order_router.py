@@ -11,8 +11,12 @@ router = APIRouter(
     responses={404:{"description":"Not found"}}
 )
 
+class MessageItem(BaseModel):
+    role: str  # "user" or "assistant"
+    message: str
+
 class OrderQueryRequest(BaseModel):
-    message: str  # Changed from 'message' to 'query'
+    messages: List[MessageItem] 
     conversation_id: Optional[str] = None
     customer_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -41,9 +45,13 @@ async def handle_order_query(
                 response="I'd be happy to help with your order information. Could you please provide your Customer ID?"
             )
         
-        user_query = request.message
+        user_messages = [m for m in request.messages if m.role == "user"]
+        if not user_messages:
+            raise HTTPException(status_code=400, detail="No user message found in the input.")
+
+        user_query = user_messages[-1].message
         print(f"Received query: {user_query}")
-        
+
         # 1. Process the order query using order service
         result = await order_service.process_order_query(customer_id, user_query)
         return OrderQueryResponse(**result)
