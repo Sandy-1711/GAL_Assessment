@@ -32,7 +32,6 @@ export default function InputBox({ lengthOfMessages }) {
             customer_id: customerId,
             metadata: {}
         })
-        scrollToEnd()
     }
 
     return <form style={{
