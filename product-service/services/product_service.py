@@ -23,7 +23,7 @@ class ProductService:
     
     def handle_query(
         self, 
-        query: str, 
+        messages: list[Dict[str,str]], 
         customer_id: Optional[str] = None, 
         metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -38,6 +38,9 @@ class ProductService:
         Returns:
             Dict with response
         """
+
+        query = " ".join([message["message"] for message in messages])
+        
         lower_q = query.lower()
         
         # Simple intent check - redirect user to include customer ID for order-related queries

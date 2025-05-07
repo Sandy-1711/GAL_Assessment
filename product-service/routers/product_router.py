@@ -18,7 +18,7 @@ router = APIRouter(
 )
 
 class ProductQueryRequest(BaseModel):
-    query: str
+    messages: list[Dict[str, str]]
     metadata: Optional[Dict[str, Any]] = None
     customer_id: Optional[str] = None
 
@@ -43,7 +43,7 @@ async def handle_product_query(
         
         response = await run_in_threadpool(
             product_service.handle_query,
-            request.query,
+            request.messages,
             request.customer_id,
             request.metadata
         )
