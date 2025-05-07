@@ -1,44 +1,48 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     value: {
         messages: [],
     }
-}
-const getLocalStorage = (name) => {
-    if (typeof window !== 'undefined') {
-        return JSON.parse(window.localStorage.getItem(name));
-    }
-    return null;
 };
 
-const setLocalstorage = (name, value) => {
-    window.localStorage.setItem(name, JSON.stringify(value));
-}
+const getLocalStorage = (name) => {
+    if (typeof window !== 'undefined') {
+        try {
+            const stored = window.localStorage.getItem(name);
+            const parsed = JSON.parse(stored);
+            if (parsed?.value?.messages && Array.isArray(parsed.value.messages)) {
+                return parsed;
+            }
+        } catch (e) {}
+    }
+    return initialState;
+};
 
+const setLocalStorage = (name, value) => {
+    if (typeof window !== 'undefined') {
+        window.localStorage.setItem(name, JSON.stringify(value));
+    }
+};
 
 export const chat = createSlice({
     name: "chat",
-    initialState: typeof window !== 'undefined' ? getLocalStorage('chatState') || initialState : initialState,
+    initialState: typeof window !== 'undefined' ? getLocalStorage('chatState') : initialState,
     reducers: {
         clear: () => {
-            setLocalstorage('chatState', initialState)
+            setLocalStorage('chatState', initialState);
             return initialState;
         },
         addMessage: (state, action) => {
-            if (action.payload) {
-                setLocalstorage('chatState', { value: { messages: action.payload } });
-                return {
-                    value: {
-                        messages: action.payload,
-                    }
+            const updatedMessages = [...state.value.messages, action.payload];
+            const newState = {
+                value: {
+                    messages: updatedMessages
                 }
-            }
-            else {
-                return initialState
-            }
-        },
-
+            };
+            setLocalStorage('chatState', newState);
+            return newState;
+        }
     },
 });
 
