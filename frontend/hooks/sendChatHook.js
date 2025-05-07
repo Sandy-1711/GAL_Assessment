@@ -30,7 +30,7 @@ const useSendChat = () => {
                 alert("Please provide your customer id");
             }
             if (data?.response) {
-                dispatch(addMessage({ user: "ai", message: data.response }))
+                dispatch(addMessage({ role: "assistant", message: data.response }))
             }
             setData(data?.response)
 
