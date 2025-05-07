@@ -11,6 +11,6 @@ export default function Home() {
   let lengthOfMessages = chat?.messages?.length;
   return <div className="h-screen w-screen bg-background flex justify-center items-center">
     {lengthOfMessages > 0 && <ChatMessagesBox messages={chat.messages} />}
-    <InputBox numberOfMessages={chat?.messages?.length} />
+    <InputBox lengthOfMessages={lengthOfMessages} />
   </div>
 }
