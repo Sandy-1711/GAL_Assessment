@@ -1,13 +1,27 @@
 import json
 import logging
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple, Optional, List
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from services.service_client import ServiceClient
 import config
+from langchain.schema import HumanMessage, AIMessage, SystemMessage
+from pydantic import BaseModel
 
 # Configure logger
 logger = logging.getLogger(__name__)
+from pydantic import BaseModel
+
+def serialize_messages(messages):
+    return [m.dict() if isinstance(m, BaseModel) else m for m in messages]
+
+def serialize_metadata(metadata):
+    if isinstance(metadata, dict):
+        return {
+            k: v.model_dump() if isinstance(v, BaseModel) else v
+            for k, v in metadata.items()
+        }
+    return metadata
 
 class MessageHandler:
     def __init__(self):
@@ -60,7 +74,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
 
     async def handle_message(
         self, 
-        message: str, 
+        messages: List[Dict[str,str]], 
         conversation_id: Optional[str] = None, 
         customer_id: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None
@@ -76,11 +90,16 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             - Source type (product, order, or general)
         """
         # Combine message with customer_id if available for better context
-        message_with_id = message
-        if customer_id:
-            message_with_id = f"{message} (Customer ID: {customer_id})"
         
-        # Classify the intent
+        history = []
+        for msg in messages:
+            if msg.role == "user":
+                history.append(HumanMessage(content=msg.message))
+            elif msg.role == "assistant":
+                history.append(AIMessage(content=msg.message))
+
+        last_user_msg = next((m.message for m in reversed(messages) if m.role == "user"), "")
+        message_with_id = f"{last_user_msg} (Customer ID: {customer_id})" if customer_id else last_user_msg
         intent_data = await self._classify_intent(message_with_id)
         
         # Extract customer_id from the message if present and not already provided
@@ -99,7 +118,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
         # Route the query based on intent
         if intent_data.get("intent") == "PRODUCT_QUERY":
             response, metadata = await self._handle_product_query(
-                message, 
+                messages, 
                 customer_id,
                 metadata if metadata else {}
             )
@@ -107,7 +126,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             
         elif intent_data.get("intent") == "ORDER_QUERY":
             response, metadata = await self._handle_order_query(
-                message, 
+                messages, 
                 customer_id,
                 metadata if metadata else {}
             )
@@ -115,7 +134,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             
         else:
             # Handle general queries
-            response = await self._handle_general_query(message)
+            response = await self._handle_general_query(messages)
             return response, False, {}, "general"
 
     async def _classify_intent(self, message: str) -> Dict[str, Any]:
@@ -141,7 +160,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
     
     async def _handle_product_query(
         self, 
-        message: str, 
+        messages: List[Dict[str,str]], 
         customer_id: Optional[str] = None,
         metadata: Dict[str, Any] = {}
     ) -> Tuple[str, Dict[str, Any]]:
@@ -151,9 +170,9 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             response = await self.product_service_client.post(
                 "/query",
                 {
-                    "query": message,
+                    "query": serialize_messages(messages),
                     "customer_id": customer_id,
-                    "metadata": metadata
+                    "metadata": serialize_metadata(metadata)
                 }
             )
             
@@ -169,7 +188,7 @@ Keep responses brief, friendly, and focused on helping the customer."""),
     
     async def _handle_order_query(
         self, 
-        message: str, 
+        messages: List[Dict[str,str]], 
         customer_id: str,
         metadata: Dict[str, Any] = {}
     ) -> Tuple[str, Dict[str, Any]]:
@@ -178,9 +197,9 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             response = await self.order_service_client.post(
                 "/query",
                 {
-                    "message": message,
+                    "message": serialize_messages(messages),
                     "customer_id": customer_id,
-                    "metadata": metadata
+                    "metadata": serialize_metadata(metadata)
                 }
             )
             
@@ -194,11 +213,11 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             logger.error(f"Error querying order service: {str(e)}", exc_info=True)
             return "I'm having trouble connecting to our order database right now. Please try again later.", {}
     
-    async def _handle_general_query(self, message: str) -> str:
+    async def _handle_general_query(self, messages: List[Dict[str,str]]) -> str:
         """Handle general queries using the LLM."""
         try:
             general_chain = self.general_prompt | self.llm
-            result = general_chain.invoke({"user_message": message})
+            result = general_chain.invoke({"user_message": messages})
             return result.content
             
         except Exception as e:

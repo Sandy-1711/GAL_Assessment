@@ -13,8 +13,12 @@ router = APIRouter(tags=["chat"])
 # Initialize message handler
 message_handler = MessageHandler()
 
-class ChatRequest(BaseModel):
+class MessageItem(BaseModel):
+    role: str  # "self" or "ai"
     message: str
+
+class ChatRequest(BaseModel):
+    messages: list[MessageItem]
     conversation_id: Optional[str] = None
     customer_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -32,10 +36,10 @@ async def handle_chat(chat_request: ChatRequest):
     Main endpoint to process user chat messages and route to appropriate services
     """
     try:
-        logger.info(f"Received chat request: {chat_request.message[:50]}...")
+        logger.info(f"Received chat request: {len(chat_request.messages)}... messages")
         
         response, requires_id, metadata, source_type = await message_handler.handle_message(
-            chat_request.message,
+            chat_request.messages,
             chat_request.conversation_id,
             chat_request.customer_id,
             chat_request.metadata
