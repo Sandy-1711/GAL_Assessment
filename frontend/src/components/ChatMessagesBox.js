@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Bot, User } from "lucide-react";
 
 export default function ChatMessagesBox({ messages = [] }) {
+
+    const messagesEndRef = useRef(null)
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages])
+
     return (
         <div className="p-4 max-w-3xl w-full mx-auto h-[85vh] mb-20 overflow-y-scroll pb-10 self-end space-y-2">
             {messages.map((msg, index) => (
@@ -26,6 +36,7 @@ export default function ChatMessagesBox({ messages = [] }) {
                     )}
                 </div>
             ))}
+            <div ref={messagesEndRef}></div>
         </div>
     );
 };

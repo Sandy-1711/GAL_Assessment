@@ -15,23 +15,24 @@ export default function InputBox({ lengthOfMessages }) {
     const chat = useSelector(state => state.chat).value
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        if (text.length === 0) {
+        if (text.trim().length === 0) {
             return
         }
 
         dispatch(
             addMessage({
                 role: "user",
-                message: text
+                message: text.trim()
             })
         )
         setText("");
         await sendMessage({
-            messages: [...chat.messages, { role: "user", message: text }],
+            messages: [...chat.messages, { role: "user", message: text.trim() }],
             conversation_id: "optional-conversation-id",
             customer_id: customerId,
             metadata: {}
         })
+        scrollToEnd()
     }
 
     return <form style={{

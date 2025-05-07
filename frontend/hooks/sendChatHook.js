@@ -7,7 +7,6 @@ const useSendChat = () => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState();
     const CHAT_SERVICE_API = process.env.NEXT_PUBLIC_CHAT_SERVICE_API;
-    console.log(CHAT_SERVICE_API);
 
     const sendMessage = async (requestObject) => {
         try {
