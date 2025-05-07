@@ -40,7 +40,7 @@ export default function InputBox({ lengthOfMessages }) {
         maxWidth: lengthOfMessages > 0 && "48rem",
         width: lengthOfMessages > 0 && "66.66667%"
 
-    }} onSubmit={handleFormSubmit} className={` bg-foreground overflow-hidden px-3 pl-7 py-3 w-1/3 flex justify-between items-center rounded-3xl`}>
+    }} onSubmit={handleFormSubmit} className={` bg-foreground overflow-hidden px-3 pl-7 py-3 w-1/3 min-w-[400px] flex justify-between items-center rounded-3xl`}>
         <input value={text} onChange={(e) => { setText(e.target.value) }} className="bg-foreground h-10 outline-none flex-1 text-white" placeholder="Ask anything..." />
         <button disabled={loading} className="bg-white h-9 w-9 rounded-full flex justify-center hover:bg-gray-400 transition-colors items-center">
             {loading ?

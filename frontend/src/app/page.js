@@ -13,8 +13,18 @@ export default function Home() {
   useEffect(() => {
     setLengthOfMessages(chat?.messages?.length)
   }, [chat.messages])
-  return <div className="h-screen w-screen bg-background flex justify-center items-center">
+  return <div className="h-screen w-screen bg-background flex flex-col justify-center items-center">
     {lengthOfMessages > 0 && <ChatMessagesBox messages={chat.messages} />}
+    {lengthOfMessages > 0 &&
+      <button
+        onClick={() => {
+          if (confirm("Are you sure you want to clear the conversation?")) {
+            dispatch(clear());
+          }
+        }}
+        className="text-sm px-3 py-2 bg-black rounded-lg text-white"
+      >Clear Conversation</button>
+    }
     <InputBox lengthOfMessages={lengthOfMessages} />
   </div>
 }
