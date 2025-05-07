@@ -6,9 +6,9 @@ Chat Service Development,5,6,Completed
 Product Search Service - Basic Setup,3,2,Completed
 Product Search Service - RAG Implementation,6,6,Completed
 Product Search Service - API Development,4,3.5,Completed
-Order Lookup Service Development,4,,Not Started
-Mock API Integration,2,,Not Started
-UI Development,6,,Not Started
+Order Lookup Service Development,4,2,Completed
+Mock API Integration,2,1.5,Completed
+UI Development,6,4,Completed
 Testing and Debugging,8,,Not Started
 Documentation and Sample Questions,3,,Not Started
 Deployment and Final Testing,4,,Not Started
