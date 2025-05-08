@@ -1,0 +1,64 @@
+services:
+  - type: web
+    name: chat-service
+    env: docker
+    plan: starter
+    dockerfilePath: ./chat-service/Dockerfile
+    buildContext: ./chat-service
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    ports:
+      - 8000
+
+  - type: web
+    name: product-service
+    env: docker
+    plan: starter
+    dockerfilePath: ./product-service/Dockerfile
+    buildContext: ./product-service
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    ports:
+      - 8001
+
+  - type: web
+    name: order-service
+    env: docker
+    plan: starter
+    dockerfilePath: ./order-service/Dockerfile
+    buildContext: ./order-service
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    volumes:
+      - name: order-datasets
+        mountPath: /app/datasets
+    ports:
+      - 8002
+
+  - type: web
+    name: mock-api
+    env: docker
+    plan: starter
+    dockerfilePath: ./order-service/Dockerfile
+    buildContext: ./order-service
+    startCommand: uvicorn services.mock_api:app --host 0.0.0.0 --port 4000
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    volumes:
+      - name: order-datasets
+        mountPath: /app/datasets
+    ports:
+      - 4000
+
+  - type: web
+    name: frontend
+    env: docker
+    plan: starter
+    dockerfilePath: ./frontend/Dockerfile
+    buildContext: ./frontend
+    ports:
+      - 3000
