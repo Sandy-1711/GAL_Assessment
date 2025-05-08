@@ -3,11 +3,12 @@ services:
     name: chat-service
     env: docker
     plan: starter
-    dockerfilePath: ./chat-service/Dockerfile
-    buildContext: ./chat-service
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
+    repo: https://github.com/your-org/your-repo
+    dockerfilePath: chat-service/Dockerfile
+    buildFilter:
+      paths:
+        - chat-service/**
+    region: oregon
     ports:
       - 8000
 
@@ -15,11 +16,12 @@ services:
     name: product-service
     env: docker
     plan: starter
-    dockerfilePath: ./product-service/Dockerfile
-    buildContext: ./product-service
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
+    repo: https://github.com/your-org/your-repo
+    dockerfilePath: product-service/Dockerfile
+    buildFilter:
+      paths:
+        - product-service/**
+    region: oregon
     ports:
       - 8001
 
@@ -27,14 +29,12 @@ services:
     name: order-service
     env: docker
     plan: starter
-    dockerfilePath: ./order-service/Dockerfile
-    buildContext: ./order-service
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
-    volumes:
-      - name: order-datasets
-        mountPath: /app/datasets
+    repo: https://github.com/your-org/your-repo
+    dockerfilePath: order-service/Dockerfile
+    buildFilter:
+      paths:
+        - order-service/**
+    region: oregon
     ports:
       - 8002
 
@@ -42,15 +42,13 @@ services:
     name: mock-api
     env: docker
     plan: starter
-    dockerfilePath: ./order-service/Dockerfile
-    buildContext: ./order-service
+    repo: https://github.com/your-org/your-repo
+    dockerfilePath: order-service/Dockerfile
+    buildFilter:
+      paths:
+        - order-service/**
     startCommand: uvicorn services.mock_api:app --host 0.0.0.0 --port 4000
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
-    volumes:
-      - name: order-datasets
-        mountPath: /app/datasets
+    region: oregon
     ports:
       - 4000
 
@@ -58,7 +56,11 @@ services:
     name: frontend
     env: docker
     plan: starter
-    dockerfilePath: ./frontend/Dockerfile
-    buildContext: ./frontend
+    repo: https://github.com/your-org/your-repo
+    dockerfilePath: frontend/Dockerfile
+    buildFilter:
+      paths:
+        - frontend/**
+    region: oregon
     ports:
       - 3000
