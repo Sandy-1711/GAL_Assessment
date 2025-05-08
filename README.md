@@ -73,7 +73,7 @@ NEXT_PUBLIC_CHAT_SERVICE_API = "http://localhost:8000/api" // make sure to keep 
 Run the following script before starting the services to preprocess and upload product data to Pinecone:
 
 ```bash
-python3 load_data.py
+python scripts/load_data.py
 ```
 
 * This script:
@@ -132,7 +132,8 @@ This will:
 
 ## 📁 Data Sources
 
-* `ProductDataset.csv` — Source for product-service RAG system.
+* `Product_Information_Dataset.csv` — Source for product-service RAG system.
+* `Order_Data_Dataset.csv`
 * Mock API for orders — Used by order-service to simulate order information.
 
 ---
