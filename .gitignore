@@ -10,7 +10,7 @@ venv/
 
 # Environment variables
 .env
-*.env
+.env.production
 
 # VS Code settings
 .vscode/

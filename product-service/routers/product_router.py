@@ -39,7 +39,7 @@ async def handle_product_query(
     Process product-related queries using RAG and LLM
     """
     try:
-        logger.info(f"Received query: {request.query}")
+        logger.info(f"Received query: {request.messages}")
         
         response = await run_in_threadpool(
             product_service.handle_query,
@@ -50,7 +50,7 @@ async def handle_product_query(
         
         return ProductQueryResponse(
             response=response["answer"],
-            metadata={"query": request.query}
+            metadata={"query": request.messages}
         )
     except Exception as e:
         logger.error(f"Error handling product query: {str(e)}", exc_info=True)

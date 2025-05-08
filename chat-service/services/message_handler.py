@@ -174,9 +174,9 @@ Keep responses brief, friendly, and focused on helping the customer."""),
             response = await self.product_service_client.post(
                 "/query",
                 {
-                    "query": messages,
+                    "messages": serialize_messages(messages),
                     "customer_id": customer_id,
-                    "metadata": metadata
+                    "metadata": serialize_metadata(metadata)
                 }
             )
             
