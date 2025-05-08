@@ -1,66 +1,113 @@
 services:
+  # Chat Service
   - type: web
     name: chat-service
     env: docker
-    plan: starter
-    repo: https://github.com/your-org/your-repo
-    dockerfilePath: chat-service/Dockerfile
-    buildFilter:
-      paths:
-        - chat-service/**
+    dockerfilePath: ./chat-service/Dockerfile
+    dockerContext: ./chat-service
     region: oregon
-    ports:
-      - 8000
+    plan: standard
+    branch: main
+    numInstances: 1
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PORT
+        value: 8000
+    autoDeploy: true
 
+  # Product Service
   - type: web
     name: product-service
     env: docker
-    plan: starter
-    repo: https://github.com/your-org/your-repo
-    dockerfilePath: product-service/Dockerfile
-    buildFilter:
-      paths:
-        - product-service/**
+    dockerfilePath: ./product-service/Dockerfile
+    dockerContext: ./product-service
     region: oregon
-    ports:
-      - 8001
+    plan: standard
+    branch: main
+    numInstances: 1
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PORT
+        value: 8001
+    autoDeploy: true
 
+  # Order Service
   - type: web
     name: order-service
     env: docker
-    plan: starter
-    repo: https://github.com/your-org/your-repo
-    dockerfilePath: order-service/Dockerfile
-    buildFilter:
-      paths:
-        - order-service/**
+    dockerfilePath: ./order-service/Dockerfile
+    dockerContext: ./order-service
     region: oregon
-    ports:
-      - 8002
+    plan: standard
+    branch: main
+    numInstances: 1
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PORT
+        value: 8002
+    autoDeploy: true
+    disk:
+      name: order-data
+      mountPath: /app/datasets
+      sizeGB: 1
 
+  # Mock API Service
   - type: web
     name: mock-api
     env: docker
-    plan: starter
-    repo: https://github.com/your-org/your-repo
-    dockerfilePath: order-service/Dockerfile
-    buildFilter:
-      paths:
-        - order-service/**
-    startCommand: uvicorn services.mock_api:app --host 0.0.0.0 --port 4000
+    dockerfilePath: ./order-service/Dockerfile
+    dockerContext: ./order-service
     region: oregon
-    ports:
-      - 4000
+    plan: standard
+    branch: main
+    numInstances: 1
+    healthCheckPath: /health
+    startCommand: uvicorn services.mock_api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PORT
+        value: 4000
+    autoDeploy: true
+    disk:
+      name: mock-api-data
+      mountPath: /app/datasets
+      sizeGB: 1
 
+  # Frontend
   - type: web
     name: frontend
     env: docker
-    plan: starter
-    repo: https://github.com/your-org/your-repo
-    dockerfilePath: frontend/Dockerfile
-    buildFilter:
-      paths:
-        - frontend/**
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
     region: oregon
-    ports:
-      - 3000
+    plan: standard
+    branch: main
+    numInstances: 1
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: CHAT_SERVICE_URL
+        fromService:
+          name: chat-service
+          type: web
+          property: url
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          name: product-service
+          type: web
+          property: url
+      - key: ORDER_SERVICE_URL
+        fromService:
+          name: order-service
+          type: web
+          property: url
+    autoDeploy: true
