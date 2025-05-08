@@ -78,7 +78,7 @@ python scripts/load_data.py
 
 * This script:
 
-  * Reads `ProductDataset.csv`
+  * Reads `Product_Information_Dataset.csv`
   * Preprocesses and chunks the data
   * Generates embeddings
   * Uploads them to Pinecone index (`rag-getting-started`)
@@ -143,4 +143,4 @@ This will:
 * Ensure all environment variables are correctly set.
 * You **must** run `load_data.py` before `docker-compose up --build`.
 * The Pinecone index (`rag-getting-started`) must be initialized only once unless data changes.
-
+* Visit [this](http://localhost:3000) to check the functionality.
