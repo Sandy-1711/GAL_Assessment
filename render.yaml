@@ -68,7 +68,8 @@ services:
     branch: main
     numInstances: 1
     healthCheckPath: /health
-    startCommand: uvicorn services.mock_api:app --host 0.0.0.0 --port $PORT
+    # Using buildCommand instead of startCommand for Docker services
+    buildCommand: echo "CMD=[\"uvicorn\", \"services.mock_api:app\", \"--host\", \"0.0.0.0\", \"--port\", \"$PORT\"]" > /opt/render/project/.render/cmd
     envVars:
       - key: PYTHONUNBUFFERED
         value: 1
@@ -95,19 +96,34 @@ services:
         value: 3000
       - key: NODE_ENV
         value: production
-      - key: CHAT_SERVICE_URL
+      - key: CHAT_SERVICE_HOST
         fromService:
           name: chat-service
           type: web
-          property: url
-      - key: PRODUCT_SERVICE_URL
+          property: host
+      - key: CHAT_SERVICE_PORT
+        fromService:
+          name: chat-service
+          type: web
+          property: port
+      - key: PRODUCT_SERVICE_HOST
         fromService:
           name: product-service
           type: web
-          property: url
-      - key: ORDER_SERVICE_URL
+          property: host
+      - key: PRODUCT_SERVICE_PORT
+        fromService:
+          name: product-service
+          type: web
+          property: port
+      - key: ORDER_SERVICE_HOST
         fromService:
           name: order-service
           type: web
-          property: url
+          property: host
+      - key: ORDER_SERVICE_PORT
+        fromService:
+          name: order-service
+          type: web
+          property: port
     autoDeploy: true
