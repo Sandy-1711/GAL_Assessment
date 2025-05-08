@@ -44,13 +44,7 @@ class ProductService:
         lower_q = query.lower()
         
         # Simple intent check - redirect user to include customer ID for order-related queries
-        if (("order" in lower_q or "delivery" in lower_q or 
-         "shipping" in lower_q or "purchase" in lower_q) 
-            and not customer_id):
-            return {
-                "answer": "I'd be happy to help with your order information. Could you please provide your Customer ID?",
-                "metadata": {"requires_customer_id": True}
-            }
+        
     
     # Add debug logging
         logger.info(f"Invoking RAG chain with query: {query}")
