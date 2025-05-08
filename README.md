@@ -144,3 +144,13 @@ This will:
 * You **must** run `load_data.py` before `docker-compose up --build`.
 * The Pinecone index (`rag-getting-started`) must be initialized only once unless data changes.
 * Visit [this](http://localhost:3000) to check the functionality.
+
+
+## Example Screenshots
+
+![](./public/Screenshot%202025-05-08%20194022.png)
+![](./public/Screenshot%202025-05-08%20194058.png)
+![](./public/Screenshot%202025-05-08%20194124.png)
+![](./public/Screenshot%202025-05-08%20194202.png)
+![](./public/Screenshot%202025-05-08%20194347.png)
+![](./public/Screenshot%202025-05-08%20194435.png)
